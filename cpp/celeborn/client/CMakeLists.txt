@@ -16,7 +16,15 @@ add_library(
         client
         reader/WorkerPartitionReader.cpp
         reader/CelebornInputStream.cpp
-        ShuffleClient.cpp)
+        ShuffleClient.cpp
+        compress/Decompressor.h
+        compress/Lz4Trait.h
+        compress/Lz4Decompressor.h
+        compress/Decompressor.cpp
+        compress/Lz4Decompressor.cpp
+        compress/ZstdDecompressor.cpp
+        compress/ZstdDecompressor.h
+        compress/ZstdTrait.h)
 
 target_include_directories(client PUBLIC ${CMAKE_BINARY_DIR})
 
@@ -31,6 +39,7 @@ target_link_libraries(
         ${FIZZ}
         ${LIBSODIUM_LIBRARY}
         ${FOLLY_WITH_DEPENDENCIES}
+        ${LZ4_WITH_DEPENDENCIES}
         ${GLOG}
         ${GFLAGS_LIBRARIES}
 )
