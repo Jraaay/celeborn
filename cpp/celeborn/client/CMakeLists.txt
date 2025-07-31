@@ -21,7 +21,10 @@ add_library(
         compress/Lz4Trait.h
         compress/Lz4Decompressor.h
         compress/Decompressor.cpp
-        compress/Lz4Decompressor.cpp)
+        compress/Lz4Decompressor.cpp
+        compress/ZstdDecompressor.cpp
+        compress/ZstdDecompressor.h
+        compress/ZstdTrait.h)
 
 target_include_directories(client PUBLIC ${CMAKE_BINARY_DIR})
 
