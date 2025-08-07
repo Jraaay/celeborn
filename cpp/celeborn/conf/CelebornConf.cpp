@@ -143,6 +143,7 @@ const std::unordered_map<std::string, folly::Optional<std::string>>
         STR_PROP(
             kShuffleCompressionCodec,
             protocol::toString(protocol::CompressionCodec::NONE)),
+        STR_PROP(kClientPushBufferMaxSize, "64kB")
         // NUM_PROP(kNumExample, 50'000),
         // BOOL_PROP(kBoolExample, false),
 };
@@ -209,6 +210,10 @@ int CelebornConf::clientFetchMaxReqsInFlight() const {
 protocol::CompressionCodec CelebornConf::shuffleCompressionCodec() const {
   return protocol::toCompressionCodec(
       optionalProperty(kShuffleCompressionCodec).value());
+}
+
+int CelebornConf::clientPushBufferMaxSize() const {
+  return std::stoi(optionalProperty(kClientPushBufferMaxSize).value());
 }
 } // namespace conf
 } // namespace celeborn

@@ -50,9 +50,9 @@ TEST(Lz4DecompressorTest, DecompressWithRaw) {
   compress::Lz4Decompressor decompressor;
 
   std::vector<uint8_t> compressedData = {
-      76, 90, 52,  66,  108, 111, 99,  107, 16,  15,  0,   0,   0,
-      15, 0,  0,   0,   188, 66,  58,  13,  72,  101, 108, 108, 111,
-      32, 67, 101, 108, 101, 98,  111, 114, 110, 33,  110, 33};
+      76,  90,  52, 66, 108, 111, 99,  107, 16,  15,  0,   0,
+      0,   15,  0,  0,  0,   188, 66,  58,  13,  72,  101, 108,
+      108, 111, 32, 67, 101, 108, 101, 98,  111, 114, 110, 33};
 
   const int originalLen = decompressor.getOriginalLen(compressedData.data());
 
