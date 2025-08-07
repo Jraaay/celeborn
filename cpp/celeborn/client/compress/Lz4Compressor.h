@@ -33,7 +33,8 @@ class Lz4Compressor final : public Compressor, Lz4Trait {
   ~Lz4Compressor() override;
 
   void compress(const uint8_t* data, int offset, int length) override;
-  int getCompressedTotalSize() const override;
+
+  size_t getCompressedTotalSize() const override;
   const std::vector<uint8_t>& getCompressedBuffer() const override;
 
   Lz4Compressor(const Lz4Compressor&) = delete;
@@ -43,8 +44,8 @@ class Lz4Compressor final : public Compressor, Lz4Trait {
   void initCompressBuffer(int maxDestLength) override;
 
   XXH32_state_t* xxhash_state_;
-  std::vector<uint8_t> compressedBuffer;
-  int compressedTotalSize;
+  std::vector<uint8_t> compressedBuffer_;
+  size_t compressedTotalSize_;
 };
 
 } // namespace compress

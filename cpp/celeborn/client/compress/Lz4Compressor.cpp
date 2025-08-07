@@ -24,7 +24,7 @@ namespace celeborn {
 namespace client {
 namespace compress {
 Lz4Compressor::Lz4Compressor(const int initialBlockSize)
-    : compressedTotalSize(0) {
+    : compressedTotalSize_(0) {
   xxhash_state_ = XXH32_createState();
   if (!xxhash_state_) {
     CELEBORN_FAIL("Failed to create XXH32 state.")
@@ -42,8 +42,8 @@ Lz4Compressor::~Lz4Compressor() {
 
 void Lz4Compressor::initCompressBuffer(const int maxDestLength) {
   const int compressedBlockSize = kHeaderLength + maxDestLength;
-  compressedBuffer.resize(compressedBlockSize);
-  std::copy_n(kMagic, kMagicLength, compressedBuffer.begin());
+  compressedBuffer_.resize(compressedBlockSize);
+  std::copy_n(kMagic, kMagicLength, compressedBuffer_.begin());
 }
 
 void Lz4Compressor::compress(
@@ -55,13 +55,13 @@ void Lz4Compressor::compress(
   const uint32_t check = XXH32_digest(xxhash_state_) & 0xFFFFFFFL;
 
   const int maxDestLength = LZ4_compressBound(length);
-  if (compressedBuffer.size() - kHeaderLength < maxDestLength) {
+  if (compressedBuffer_.size() - kHeaderLength < maxDestLength) {
     initCompressBuffer(maxDestLength);
   }
 
   const auto src = reinterpret_cast<const char*>(data + offset);
   const auto dest =
-      reinterpret_cast<char*>(compressedBuffer.data() + kHeaderLength);
+      reinterpret_cast<char*>(compressedBuffer_.data() + kHeaderLength);
 
   int compressedLength = LZ4_compress_default(src, dest, length, maxDestLength);
 
@@ -70,26 +70,26 @@ void Lz4Compressor::compress(
     compressMethod = kCompressionMethodRaw;
     compressedLength = length;
     std::copy_n(
-        data + offset, length, compressedBuffer.begin() + kHeaderLength);
+        data + offset, length, compressedBuffer_.begin() + kHeaderLength);
   } else {
     compressMethod = kCompressionMethodLZ4;
   }
 
-  compressedBuffer[kMagicLength] = static_cast<uint8_t>(compressMethod);
-  writeIntLE(compressedLength, compressedBuffer.data(), kMagicLength + 1);
-  writeIntLE(length, compressedBuffer.data(), kMagicLength + 5);
+  compressedBuffer_[kMagicLength] = static_cast<uint8_t>(compressMethod);
+  writeIntLE(compressedLength, compressedBuffer_.data(), kMagicLength + 1);
+  writeIntLE(length, compressedBuffer_.data(), kMagicLength + 5);
   writeIntLE(
-      static_cast<int>(check), compressedBuffer.data(), kMagicLength + 9);
+      static_cast<int>(check), compressedBuffer_.data(), kMagicLength + 9);
 
-  compressedTotalSize = kHeaderLength + compressedLength;
+  compressedTotalSize_ = kHeaderLength + compressedLength;
 }
 
-int Lz4Compressor::getCompressedTotalSize() const {
-  return compressedTotalSize;
+size_t Lz4Compressor::getCompressedTotalSize() const {
+  return compressedTotalSize_;
 }
 
 const std::vector<uint8_t>& Lz4Compressor::getCompressedBuffer() const {
-  return compressedBuffer;
+  return compressedBuffer_;
 }
 
 } // namespace compress
